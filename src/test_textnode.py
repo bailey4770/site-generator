@@ -48,9 +48,9 @@ class TestTextNode(unittest.TestCase):
     def test_not_eq4(self):
         node1 = TextNode(
             "The text here is...",
-            TextType.PLAIN,
+            TextType.TEXT,
         )
-        node2 = TextNode("...to the text here", TextType.PLAIN)
+        node2 = TextNode("...to the text here", TextType.TEXT)
         self.assertNotEqual(node1, node2)
 
 

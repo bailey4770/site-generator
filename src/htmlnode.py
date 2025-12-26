@@ -1,4 +1,5 @@
-from typing import Self, override
+from __future__ import annotations
+from typing import override
 
 
 class HTMLNode:
@@ -6,18 +7,18 @@ class HTMLNode:
         self,
         tag: str | None = None,
         value: str | None = None,
-        children: list[Self] | None = None,
+        children: list[HTMLNode] | None = None,
         props: dict[str, str] | None = None,
     ):
         self.tag: str | None = tag
         self.value: str | None = value
-        self.children: list[Self] | None = children
+        self.children: list[HTMLNode] | None = children
         self.props: dict[str, str] | None = props
 
-    def to_html(self):
+    def to_html(self) -> str:
         raise NotImplementedError
 
-    def props_to_html(self):
+    def props_to_html(self) -> str:
         html = ""
 
         if self.props is not None:
@@ -41,7 +42,7 @@ class LeafNode(HTMLNode):
         super().__init__(tag, value, None, props)
 
     @override
-    def to_html(self):
+    def to_html(self) -> str:
         if not self.value:
             raise ValueError
 
@@ -53,3 +54,26 @@ class LeafNode(HTMLNode):
             props_html = super().props_to_html()
 
         return f"<{self.tag}{props_html}>{self.value}</{self.tag}>"
+
+
+class ParentNode(HTMLNode):
+    def __init__(
+        self,
+        tag: str,
+        children: list[HTMLNode],
+        props: dict[str, str] | None = None,
+    ):
+        super().__init__(tag, None, children, props)
+
+    @override
+    def to_html(self):
+        if not self.tag:
+            raise ValueError("Parent node missing tags")
+        elif not self.children:
+            raise ValueError("Parent node mising children")
+
+        children_html: str = ""
+        for child in self.children:
+            children_html += child.to_html()
+
+        return f"<{self.tag}>{children_html}</{self.tag}>"
