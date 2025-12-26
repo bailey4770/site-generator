@@ -1,48 +1,5 @@
-import re
-
-from textnode import TextType, TextNode
+from textnode import TextType, TextNode, blocks_to_text_nodes
 from htmlnode import LeafNode
-
-
-def extract_markdown_images(text: str):
-    return re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
-
-
-def extract_markdown_links(text: str):
-    return re.findall(r"\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
-
-
-def split_nodes_delimiter(
-    old_nodes: list[TextNode], delimiter: str, text_type: TextType
-) -> list[TextNode]:
-    output: list[TextNode] = []
-
-    for old_node in old_nodes:
-        if old_node.text_type != TextType.TEXT:
-            output.append(old_node)
-            continue
-
-        text = old_node.text
-        parts = text.split(delimiter)
-
-        if len(parts) % 2 == 0:
-            raise ValueError("Invalid input: that is invalid Markdown syntax")
-
-        inside = False
-        for part in parts:
-            if len(part) == 0:
-                inside = not inside
-                continue
-
-            if not inside:
-                new_node = TextNode(part, old_node.text_type)
-            else:
-                new_node = TextNode(part, text_type)
-
-            output.append(new_node)
-            inside = not inside
-
-    return output
 
 
 def text_node_to_html_node(text_node: TextNode):
@@ -70,9 +27,10 @@ def text_node_to_html_node(text_node: TextNode):
 
 
 def main():
-    node = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
-
-    print(node)
+    sample_md = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+    actual = blocks_to_text_nodes(sample_md)
+    for node in actual:
+        print(node)
 
 
 if __name__ == "__main__":
