@@ -8,7 +8,7 @@ from textnode import (
     _split_nodes,
     _split_node_links,
     _split_node_images,
-    blocks_to_text_nodes,
+    block_to_text_nodes,
 )
 
 
@@ -271,7 +271,7 @@ class TestSplitNodes(unittest.TestCase):
 class TestTextToTextNodes(unittest.TestCase):
     def test_1_of_each(self):
         sample_md = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-        actual = blocks_to_text_nodes(sample_md)
+        actual = block_to_text_nodes(sample_md)
         expected = [
             TextNode("This is ", TextType.TEXT),
             TextNode("text", TextType.BOLD),
@@ -290,7 +290,7 @@ class TestTextToTextNodes(unittest.TestCase):
 
     def test_2(self):
         sample_md = "**Heading** welome to this _test_. Here is a [link](www.archlinux.org) and another [link](www.boot.dev). See this image ![test](test.png) too **end of page**"
-        actual = blocks_to_text_nodes(sample_md)
+        actual = block_to_text_nodes(sample_md)
         expected = [
             TextNode("Heading", TextType.BOLD),
             TextNode(" welome to this ", TextType.TEXT),
@@ -309,11 +309,11 @@ class TestTextToTextNodes(unittest.TestCase):
     def test_invalid_syntax_heading(self):
         sample_md = "**incomplete heading*"
         with self.assertRaises(ValueError):
-            _ = blocks_to_text_nodes(sample_md)
+            _ = block_to_text_nodes(sample_md)
 
     def test_invalid_syntax_nested_links(self):
         sample_md = "Here is an ![image (test.png) but [with a link](link.com)"
-        actual = blocks_to_text_nodes(sample_md)
+        actual = block_to_text_nodes(sample_md)
         expected = [
             TextNode("Here is an !", TextType.TEXT),
             TextNode("image (test.png) but ", TextType.TEXT),

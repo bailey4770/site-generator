@@ -37,9 +37,10 @@ class TextNode:
         return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
 
 
-def blocks_to_text_nodes(text: str) -> list[TextNode]:
+def block_to_text_nodes(text: str) -> list[TextNode]:
     """Simply pass MD text as string to be parsed, and list of TextNodes will be returned"""
-    text_node = TextNode(text, TextType.TEXT)
+    removed_nl = " ".join(line.strip() for line in text.splitlines())
+    text_node = TextNode(removed_nl, TextType.TEXT)
     debug = False
 
     if debug:

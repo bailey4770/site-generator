@@ -26,15 +26,6 @@ class TestHTMLNode(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             _ = node.to_html()
 
-    def test_repr(self):
-        node1 = HTMLNode("tag", "text")
-        node2 = HTMLNode("tag bold", "bold text")
-        node3 = HTMLNode("tag parent", "parent text", [node1, node2])
-
-        output = node3.__repr__()
-        expected = "HTMLNode(Tag: tag parent, Value: parent text, Children: [HTMLNode(Tag: tag, Value: text, Children: None, Props: None), HTMLNode(Tag: tag bold, Value: bold text, Children: None, Props: None)], Props: None)"
-        self.assertEqual(output, expected)
-
 
 class TestLeafNode(unittest.TestCase):
     def test_leaf_to_html1(self):

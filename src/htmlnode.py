@@ -29,7 +29,7 @@ class HTMLNode:
 
     @override
     def __repr__(self):
-        return f"HTMLNode(Tag: {self.tag}, Value: {self.value}, Children: {self.children}, Props: {self.props})"
+        raise NotImplementedError
 
 
 class LeafNode(HTMLNode):
@@ -44,7 +44,7 @@ class LeafNode(HTMLNode):
     @override
     def to_html(self) -> str:
         if not self.value:
-            raise ValueError
+            raise ValueError("Leaf Node missing value")
 
         if not self.tag:
             return self.value
@@ -54,6 +54,12 @@ class LeafNode(HTMLNode):
             props_html = super().props_to_html()
 
         return f"<{self.tag}{props_html}>{self.value}</{self.tag}>"
+
+    @override
+    def __repr__(self):
+        return (
+            f"\n   LeafNode(Tag: {self.tag}, Value: {self.value}, Props: {self.props})"
+        )
 
 
 class ParentNode(HTMLNode):
@@ -77,3 +83,7 @@ class ParentNode(HTMLNode):
             children_html += child.to_html()
 
         return f"<{self.tag}>{children_html}</{self.tag}>"
+
+    @override
+    def __repr__(self):
+        return f"\nParentNode(Tag: {self.tag}, Children: \n{self.children}\n, Props: {self.props})"
