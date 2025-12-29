@@ -15,9 +15,10 @@ def markdown_to_blocks(markdown: str) -> list[str]:
 
     current_block = ""
     for line in markdown.splitlines():
-        line = line.strip()
+        if not current_block.startswith("```"):
+            line = line.strip()
 
-        if not line and current_block:
+        if (not line or line == "\n") and current_block:
             blocks.append(current_block)
             current_block = ""
             continue
@@ -31,7 +32,7 @@ def markdown_to_blocks(markdown: str) -> list[str]:
     return blocks
 
 
-def find_block_type(string_block: str) -> BlockType:
+def get_block_type(string_block: str) -> BlockType:
     def _is_ordered_list(lines: list[str]):
         number = 1
 
@@ -46,13 +47,19 @@ def find_block_type(string_block: str) -> BlockType:
     parts = string_block.split(" ")
     lines = string_block.split("\n")
 
+    unordered_prefixes = ["-", "+", "*"]
+
     if all(char == "#" for char in parts[0]) and len(parts[0]) <= 6:
         return BlockType.HEADING
-    elif string_block.startswith("```") and string_block.endswith("```"):
+    elif string_block.strip().startswith("```") and string_block.strip().endswith(
+        "```"
+    ):
         return BlockType.CODE
     elif all(line.startswith(">") for line in lines):
         return BlockType.QUOTE
-    elif all(line.startswith("-") for line in lines):
+    elif any(
+        all(line.startswith(prefix) for line in lines) for prefix in unordered_prefixes
+    ):
         return BlockType.UNORDERED_LIST
     elif _is_ordered_list(lines):
         return BlockType.ORDERED_LIST

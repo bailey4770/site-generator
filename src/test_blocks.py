@@ -1,5 +1,5 @@
 import unittest
-from blocks import BlockType, markdown_to_blocks, find_block_type
+from blocks import BlockType, markdown_to_blocks, get_block_type
 
 
 class TestMarkdownToBlocks(unittest.TestCase):
@@ -54,60 +54,60 @@ This is the same paragraph on a new line
 class TestBlockToBlock(unittest.TestCase):
     def test_ordered_list(self):
         block = "1. One\n2. second\n3. again"
-        actual = find_block_type(block)
+        actual = get_block_type(block)
         expected = BlockType.ORDERED_LIST
         self.assertEqual(actual, expected)
 
     def test_false_ordered_list(self):
         block = "1. hey\n3. skipped\n4. okay"
-        actual = find_block_type(block)
+        actual = get_block_type(block)
         expected = BlockType.PARAGRAPH
         self.assertEqual(actual, expected)
 
     def test_unordered_list(self):
         block = "- help\n- me"
-        actual = find_block_type(block)
+        actual = get_block_type(block)
         expected = BlockType.UNORDERED_LIST
         self.assertEqual(actual, expected)
 
     def test_heading(self):
         block = "## heading"
-        actual = find_block_type(block)
+        actual = get_block_type(block)
         expected = BlockType.HEADING
         self.assertEqual(actual, expected)
 
     def test_false_heading(self):
         block = "####### too many hashes"
-        actual = find_block_type(block)
+        actual = get_block_type(block)
         expected = BlockType.PARAGRAPH
         self.assertEqual(actual, expected)
 
     def test_code(self):
         block = '```\nprint("hello world!")\n```'
-        actual = find_block_type(block)
+        actual = get_block_type(block)
         expected = BlockType.CODE
         self.assertEqual(actual, expected)
 
     def test_false_code(self):
         block = "``x = 1\n"
-        actual = find_block_type(block)
+        actual = get_block_type(block)
         expected = BlockType.PARAGRAPH
         self.assertEqual(actual, expected)
 
     def test_quote(self):
         block = "> I am\n> highly skilled\n> as Prime Minister\n> increased GDP"
-        actual = find_block_type(block)
+        actual = get_block_type(block)
         expected = BlockType.QUOTE
         self.assertEqual(actual, expected)
 
     def test_false_quote(self):
         block = "> This is\n a false\n> quote"
-        actual = find_block_type(block)
+        actual = get_block_type(block)
         expected = BlockType.PARAGRAPH
         self.assertEqual(actual, expected)
 
     def test_paragraph(self):
         block = "normal block\nof text\nin a\nparagraph"
-        actual = find_block_type(block)
+        actual = get_block_type(block)
         expected = BlockType.PARAGRAPH
         self.assertEqual(actual, expected)

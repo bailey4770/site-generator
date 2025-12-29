@@ -72,14 +72,52 @@ class TestMDToHTML(unittest.TestCase):
     def test_codeblock(self):
         md = """
     ```
-    This is text that _should_ remain
-    the **same** even with inline stuff
+This is text that _should_ remain
+the **same** even with inline stuff
     ```
     """
 
         actual = md_to_html_node(md).to_html()
-        expected = "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>"
+        expected = "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff</code></pre></div>"
         self.assertEqual(actual, expected)
 
-    def test_blocks_and_inline(self):
+    def test_mixed_headings_and_lists(self):
+        md = """## Subheading
 
+* first bullet
+* second bullet
+
+### Smaller heading
+
+1. numbered one
+2. numbered two
+3. numbered three"""
+        actual = md_to_html_node(md).to_html()
+        expected = "<div><h2>Subheading</h2><ul><li>first bullet</li><li>second bullet</li></ul><h3>Smaller</h3><ol><li>numbered one</li><li>numbered two</li><li>numbered three</li></ol></div>"
+        self.assertEqual(actual, expected)
+
+    def test_quotes_and_code_blocks(self):
+        md = """> This is a quoted section
+> with multiple lines
+
+```python
+def example():
+    return True
+```
+
+> Another quote after code"""
+        actual = md_to_html_node(md).to_html()
+        expected = "<div><blockquote>This is a quoted section\nwith multiple lines\n</blockquote><pre><code>def example():\n    return True</code></pre><blockquote>Another quote after code\n</blockquote></div>"
+        self.assertEqual(actual, expected)
+
+    def test_empty_and_whitespace_blocks(self):
+        md = """# Title
+
+
+Some text with gaps
+
+
+- list item"""
+        actual = md_to_html_node(md).to_html()
+        expected = "<div><h1>Title</h1><p>Some text with gaps</p><ul><li>list item</li></ul></div>"
+        self.assertEqual(actual, expected)
