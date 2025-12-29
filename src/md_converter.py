@@ -20,7 +20,7 @@ def md_to_html_node(markdown: str) -> HTMLNode:
         match get_block_type(block):
             case BlockType.PARAGRAPH:
                 text_nodes = block_to_text_nodes(block)
-                node = text_nodes_to_parent(text_nodes)
+                node = _text_nodes_to_parent(text_nodes)
             case BlockType.HEADING:
                 parts = block.split()
                 heading_number = "h" + str(len(parts[0]))
@@ -59,7 +59,7 @@ def md_to_html_node(markdown: str) -> HTMLNode:
     return final_parent
 
 
-def text_node_to_html_node(text_node: TextNode):
+def _text_node_to_html_node(text_node: TextNode):
     match text_node.text_type:
         case TextType.TEXT:
             return LeafNode(None, text_node.text)
@@ -83,10 +83,10 @@ def text_node_to_html_node(text_node: TextNode):
                 raise ValueError("no link provided")
 
 
-def text_nodes_to_parent(text_nodes: list[TextNode]) -> ParentNode:
+def _text_nodes_to_parent(text_nodes: list[TextNode]) -> ParentNode:
     children: list[HTMLNode] = []
     for node in text_nodes:
-        leaf = text_node_to_html_node(node)
+        leaf = _text_node_to_html_node(node)
         children.append(leaf)
 
     return ParentNode("p", children)

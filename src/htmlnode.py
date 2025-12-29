@@ -43,15 +43,16 @@ class LeafNode(HTMLNode):
 
     @override
     def to_html(self) -> str:
-        if not self.value:
-            raise ValueError("Leaf Node missing value")
-
-        if not self.tag:
-            return self.value
-
         props_html = ""
         if self.props:
             props_html = super().props_to_html()
+
+        if not self.value:
+            # must be an image node
+            return f"<{self.tag}{props_html}>"
+
+        if not self.tag:
+            return self.value
 
         return f"<{self.tag}{props_html}>{self.value}</{self.tag}>"
 
