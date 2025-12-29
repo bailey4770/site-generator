@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextType, TextNode
-from main import (
+from text_converter import (
     text_node_to_html_node,
     md_to_html_node,
 )
