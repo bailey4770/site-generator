@@ -44,6 +44,18 @@ def get_static_content(public_path: Path, static_path: Path):
     _copy_recursive(static_path)
 
 
+def get_web_content(public_path: Path, content_path: Path, template_path: Path):
+    content = os.listdir(content_path)
+    for item in content:
+        item_path: Path = content_path.joinpath(item)
+        if os.path.isfile(item_path):
+            generate_page(item_path, template_path, public_path)
+        else:
+            new_public_path = public_path.joinpath(item)
+            os.mkdir(new_public_path)
+            get_web_content(new_public_path, item_path, template_path)
+
+
 def extract_title(markdown: str):
     for line in markdown.splitlines():
         parts = line.split()
@@ -85,7 +97,8 @@ def main():
     )
 
     get_static_content(public_path, static_path)
-    generate_page(content_path.joinpath("index.md"), template_path, public_path)
+    get_web_content(public_path, content_path, template_path)
+    print("Website generated")
 
 
 if __name__ == "__main__":

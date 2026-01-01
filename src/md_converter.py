@@ -24,7 +24,9 @@ def md_to_html_node(markdown: str) -> HTMLNode:
             case BlockType.HEADING:
                 parts = block.split()
                 heading_number = "h" + str(len(parts[0]))
-                node = LeafNode(heading_number, " ".join(parts[1:]))
+                heading = " ".join(parts[1:])
+                text_nodes = block_to_text_nodes(heading)
+                node = _text_nodes_to_html_parent(heading_number, text_nodes)
             case BlockType.CODE:
                 backticks_removed = block.strip()[3:-3]
                 # also remove leading new lines and empty space

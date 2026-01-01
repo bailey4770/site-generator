@@ -169,3 +169,9 @@ Some text with gaps
         actual = md_to_html_node(md).to_html()
         expected = "<div><ul><li>this should be <b>bold</b></li><li>and this in <i>italics</i></li><li><code>and this in code</code></li></ul><ol><li>this should be <b>bold</b></li><li>and this in <i>italics</i></li><li><code>and this in code</code></li></ol></div>"
         self.assertEqual(actual, expected)
+
+    def test_inline_bold_and_italic_in_heading(self):
+        md = "## **Themes** of _Timeless_ Relevance"
+        actual = md_to_html_node(md).to_html()
+        expected = "<div><h2><b>Themes</b> of <i>Timeless</i> Relevance</h2></div>"
+        self.assertEqual(actual, expected)

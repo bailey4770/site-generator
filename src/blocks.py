@@ -45,7 +45,7 @@ def get_block_type(string_block: str) -> BlockType:
         return True
 
     parts = string_block.split(" ")
-    lines = string_block.split("\n")
+    lines = string_block.splitlines()
 
     unordered_prefixes = ["-", "+", "*"]
 
@@ -58,7 +58,8 @@ def get_block_type(string_block: str) -> BlockType:
     elif all(line.startswith(">") for line in lines):
         return BlockType.QUOTE
     elif any(
-        all(line.startswith(prefix) for line in lines) for prefix in unordered_prefixes
+        all(line.split()[0] == prefix for line in lines)
+        for prefix in unordered_prefixes
     ):
         return BlockType.UNORDERED_LIST
     elif _is_ordered_list(lines):
