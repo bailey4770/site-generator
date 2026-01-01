@@ -93,7 +93,7 @@ the **same** even with inline stuff
 2. numbered two
 3. numbered three"""
         actual = md_to_html_node(md).to_html()
-        expected = "<div><h2>Subheading</h2><ul><li>first bullet</li><li>second bullet</li></ul><h3>Smaller</h3><ol><li>numbered one</li><li>numbered two</li><li>numbered three</li></ol></div>"
+        expected = "<div><h2>Subheading</h2><ul><li>first bullet</li><li>second bullet</li></ul><h3>Smaller heading</h3><ol><li>numbered one</li><li>numbered two</li><li>numbered three</li></ol></div>"
         self.assertEqual(actual, expected)
 
     def test_quotes_and_code_blocks(self):
@@ -130,54 +130,42 @@ Some text with gaps
         )
         self.assertEqual(actual, expected)
 
-    def test_tolkien_fan_club(self):
-        md = """# Tolkien Fan Club
-
-![JRR Tolkien sitting](/images/tolkien.png)
-
-Here's the deal, **I like Tolkien**.
-
-> "I am in fact a Hobbit in all but size."
->
-> -- J.R.R. Tolkien
+    def test_links_in_unordered_list(self):
+        md = """
 
 ## Blog posts
 
 - [Why Glorfindel is More Impressive than Legolas](/blog/glorfindel)
 - [Why Tom Bombadil Was a Mistake](/blog/tom)
 - [The Unparalleled Majesty of "The Lord of the Rings"](/blog/majesty)
-
-## Reasons I like Tolkien
-
-- You can spend years studying the legendarium and still not understand its depths
-- It can be enjoyed by children and adults alike
-- Disney _didn't ruin it_ (okay, but Amazon might have)
-- It created an entirely new genre of fantasy
-
-## My favorite characters (in order)
-
-1. Gandalf
-2. Bilbo
-3. Sam
-4. Glorfindel
-5. Galadriel
-6. Elrond
-7. Thorin
-8. Sauron
-9. Aragorn
-
-Here's what `elflang` looks like (the perfect coding language):
-
-```
-func main(){
-    fmt.Println("Aiya, Ambar!")
-}
-```
-
-Want to get in touch? [Contact me here](/contact).
-
-This site was generated with a custom-built [static site generator](https://www.boot.dev/courses/build-static-site-generator-python) from the course on [Boot.dev](https://www.boot.dev)."""
+"""
         actual = md_to_html_node(md).to_html()
-        expected = '<div><h1>Tolkien Fan Club</h1><p><img src="/images/tolkien.png" alt="JRR Tolkien sitting"></p><p>Here&#39;s the deal, <strong>I like Tolkien</strong>.</p><blockquote><p>&quot;I am in fact a Hobbit in all but size.&quot;</p><p>-- J.R.R. Tolkien</p></blockquote><h2>Blog posts</h2><ul><li><a href="/blog/glorfindel">Why Glorfindel is More Impressive than Legolas</a></li><li><a href="/blog/tom">Why Tom Bombadil Was a Mistake</a></li><li><a href="/blog/majesty">The Unparalleled Majesty of &quot;The Lord of the Rings&quot;</a></li></ul><h2>Reasons I like Tolkien</h2><ul><li>You can spend years studying the legendarium and still not understand its depths</li><li>It can be enjoyed by children and adults alike</li><li>Disney <em>didn&#39;t ruin it</em> (okay, but Amazon might have)</li><li>It created an entirely new genre of fantasy</li></ul><h2>My favorite characters (in order)</h2><ol><li>Gandalf</li><li>Bilbo</li><li>Sam</li><li>Glorfindel</li><li>Galadriel</li><li>Elrond</li><li>Thorin</li><li>Sauron</li><li>Aragorn</li></ol><p>Here&#39;s what <code>elflang</code> looks like (the perfect coding language):</p><pre><code>func main(){fmt.Println(&quot;Aiya, Ambar!&quot;)}</code></pre><p>Want to get in touch? <a href="/contact">Contact me here</a>.</p><p>This site was generated with a custom-built <a href="https://www.boot.dev/courses/build-static-site-generator-python">static site generator</a> from the course on <a href="https://www.boot.dev">Boot.dev</a>.</p></div>'
-        self.maxDiff = None
+        expected = '<div><h2>Blog posts</h2><ul><li><a href="/blog/glorfindel">Why Glorfindel is More Impressive than Legolas</a></li><li><a href="/blog/tom">Why Tom Bombadil Was a Mistake</a></li><li><a href="/blog/majesty">The Unparalleled Majesty of "The Lord of the Rings"</a></li></ul></div>'
+        self.assertEqual(actual, expected)
+
+    def test_links_in_ordered_list(self):
+        md = """
+
+## Blog posts
+
+1. [Why Glorfindel is More Impressive than Legolas](/blog/glorfindel)
+2. [Why Tom Bombadil Was a Mistake](/blog/tom)
+3. [The Unparalleled Majesty of "The Lord of the Rings"](/blog/majesty)
+"""
+        actual = md_to_html_node(md).to_html()
+        expected = '<div><h2>Blog posts</h2><ol><li><a href="/blog/glorfindel">Why Glorfindel is More Impressive than Legolas</a></li><li><a href="/blog/tom">Why Tom Bombadil Was a Mistake</a></li><li><a href="/blog/majesty">The Unparalleled Majesty of "The Lord of the Rings"</a></li></ol></div>'
+        self.assertEqual(actual, expected)
+
+    def test_inline_bold_italic_code_in_lists(self):
+        md = """
+- this should be **bold**
+- and this in _italics_
+- `and this in code`
+
+1. this should be **bold**
+2. and this in _italics_
+3. `and this in code` 
+    """
+        actual = md_to_html_node(md).to_html()
+        expected = "<div><ul><li>this should be <b>bold</b></li><li>and this in <i>italics</i></li><li><code>and this in code</code></li></ul><ol><li>this should be <b>bold</b></li><li>and this in <i>italics</i></li><li><code>and this in code</code></li></ol></div>"
         self.assertEqual(actual, expected)

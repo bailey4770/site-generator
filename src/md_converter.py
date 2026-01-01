@@ -20,11 +20,11 @@ def md_to_html_node(markdown: str) -> HTMLNode:
         match get_block_type(block):
             case BlockType.PARAGRAPH:
                 text_nodes = block_to_text_nodes(block)
-                node = _text_nodes_to_parent(text_nodes)
+                node = _text_nodes_to_html_parent("p", text_nodes)
             case BlockType.HEADING:
                 parts = block.split()
                 heading_number = "h" + str(len(parts[0]))
-                node = LeafNode(heading_number, parts[1])
+                node = LeafNode(heading_number, " ".join(parts[1:]))
             case BlockType.CODE:
                 backticks_removed = block.strip()[3:-3]
                 # also remove leading new lines and empty space
@@ -42,14 +42,22 @@ def md_to_html_node(markdown: str) -> HTMLNode:
                 node = LeafNode("blockquote", quotemark_removed)
             case BlockType.UNORDERED_LIST:
                 bullets_removed = _remove_marks_lines(block)
-                unordered_list_nodes: list[HTMLNode] = [
-                    LeafNode("li", line) for line in bullets_removed.split("\n") if line
+                text_nodes = [
+                    block_to_text_nodes(line) for line in bullets_removed.splitlines()
+                ]
+                unordered_list_nodes: list[ParentNode] = [
+                    _text_nodes_to_html_parent("li", line_nodes)
+                    for line_nodes in text_nodes
                 ]
                 node = ParentNode("ul", unordered_list_nodes)
             case BlockType.ORDERED_LIST:
                 numbers_removed = _remove_marks_lines(block)
-                ordered_list_nodes: list[HTMLNode] = [
-                    LeafNode("li", line) for line in numbers_removed.split("\n") if line
+                text_nodes = [
+                    block_to_text_nodes(line) for line in numbers_removed.splitlines()
+                ]
+                ordered_list_nodes: list[ParentNode] = [
+                    _text_nodes_to_html_parent("li", line_nodes)
+                    for line_nodes in text_nodes
                 ]
                 node = ParentNode("ol", ordered_list_nodes)
 
@@ -83,10 +91,10 @@ def _text_node_to_html_node(text_node: TextNode):
                 raise ValueError("no link provided")
 
 
-def _text_nodes_to_parent(text_nodes: list[TextNode]) -> ParentNode:
+def _text_nodes_to_html_parent(tag: str, text_nodes: list[TextNode]) -> ParentNode:
     children: list[HTMLNode] = []
     for node in text_nodes:
         leaf = _text_node_to_html_node(node)
         children.append(leaf)
 
-    return ParentNode("p", children)
+    return ParentNode(tag, children)

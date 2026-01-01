@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import override
+from collections.abc import Sequence
 
 
 class HTMLNode:
@@ -7,12 +8,12 @@ class HTMLNode:
         self,
         tag: str | None = None,
         value: str | None = None,
-        children: list[HTMLNode] | None = None,
+        children: Sequence[HTMLNode] | None = None,
         props: dict[str, str] | None = None,
     ):
         self.tag: str | None = tag
         self.value: str | None = value
-        self.children: list[HTMLNode] | None = children
+        self.children: Sequence[HTMLNode] | None = children
         self.props: dict[str, str] | None = props
 
     def to_html(self) -> str:
@@ -28,7 +29,7 @@ class HTMLNode:
         return html
 
     @override
-    def __repr__(self):
+    def __repr__(self) -> str:
         raise NotImplementedError
 
 
@@ -67,7 +68,7 @@ class ParentNode(HTMLNode):
     def __init__(
         self,
         tag: str,
-        children: list[HTMLNode],
+        children: Sequence[HTMLNode],
         props: dict[str, str] | None = None,
     ):
         super().__init__(tag, None, children, props)
