@@ -48,7 +48,7 @@ PUBLIC_PATH = Path("public")
 STATIC_PATH = Path("static")
 CONTENT_PATH = Path("content")
 TEMPLATE_PATH: Path = Path("template.html")
-LOGGING_LEVEL = logging.DEBUG
+LOGGING_LEVEL = logging.INFO
 
 
 def get_languages() -> list[str]:
