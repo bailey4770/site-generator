@@ -3,6 +3,13 @@ from textnode import TextType, TextNode, block_to_text_nodes
 from htmlnode import HTMLNode, LeafNode, ParentNode
 import config as cfg
 
+import logging
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=cfg.get_logging_level(),
+)
+
 
 def md_to_html_node(markdown: str) -> HTMLNode:
     def _remove_marks_lines(block: str) -> str:
@@ -16,6 +23,8 @@ def md_to_html_node(markdown: str) -> HTMLNode:
         if not block:
             continue
         node: HTMLNode = HTMLNode()
+
+        logger.debug("Block: %s Block type: %s", block, get_block_type(block))
 
         match get_block_type(block):
             case BlockType.PARAGRAPH:

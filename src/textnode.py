@@ -1,6 +1,13 @@
 from enum import Enum
 import re
 from typing import override, Callable
+import logging
+from config import get_logging_level
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=get_logging_level(),
+)
 
 
 class TextType(Enum):
@@ -41,17 +48,20 @@ def block_to_text_nodes(text: str) -> list[TextNode]:
     """Simply pass MD text as string to be parsed, and list of TextNodes will be returned"""
     removed_nl = " ".join(line.strip() for line in text.splitlines())
     text_node = TextNode(removed_nl, TextType.TEXT)
-    debug = False
 
-    if debug:
-        print(f"===========FOR INPUT {text}==============")
+    logger.debug(f"===========FOR INPUT {text}==============")
 
     # image extraction MUST be run before link extraction, due to markdown syntax
-    nodes = _split_nodes([text_node], extractor=_split_node_images, debug=debug)
-    nodes = _split_nodes(nodes, extractor=_split_node_links, debug=debug)
-    nodes = _split_nodes(nodes, "`", TextType.CODE, debug=debug)
-    nodes = _split_nodes(nodes, "_", TextType.ITALIC, debug=debug)
-    nodes = _split_nodes(nodes, "**", TextType.BOLD, debug=debug)
+    nodes: list[TextNode] = []
+    try:
+        nodes = _split_nodes([text_node], extractor=_split_node_images)
+        nodes = _split_nodes(nodes, extractor=_split_node_links)
+        nodes = _split_nodes(nodes, "`", TextType.CODE)
+        nodes = _split_nodes(nodes, "_", TextType.ITALIC)
+        nodes = _split_nodes(nodes, "**", TextType.BOLD)
+    except ValueError:
+        logger.exception("error splitting nodes")
+        raise
 
     return nodes
 
@@ -61,7 +71,6 @@ def _split_nodes(
     delimiter: str | None = None,
     text_type: TextType | None = None,
     extractor: Callable[[TextNode], list[TextNode]] | None = None,
-    debug: bool = False,
 ) -> list[TextNode]:
     output: list[TextNode] = []
 
@@ -75,16 +84,19 @@ def _split_nodes(
                 raise ValueError(
                     "If no extracter is supplied, delimiter and text type must be"
                 )
-            output.extend(_split_node_delimiter(old_node, delimiter, text_type))
+            try:
+                output.extend(_split_node_delimiter(old_node, delimiter, text_type))
+            except ValueError:
+                logger.exception("Error in _split_node_delimiter")
+                raise
 
         else:
             output.extend(extractor(old_node))
 
-    if debug:
-        print("=====")
-        print(delimiter, extractor)
-        for node in output:
-            print(node)
+    logger.debug("=====")
+    logger.debug("delimiter: %s, extractor: %s", delimiter, extractor)
+    for node in output:
+        logger.debug(node)
 
     return output
 

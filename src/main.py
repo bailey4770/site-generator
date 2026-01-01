@@ -1,9 +1,16 @@
 import os
 from pathlib import Path
 import shutil
+import logging
 
 import config as cfg
 from md_converter import md_to_html_node
+
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=cfg.get_logging_level(),
+)
 
 
 def get_static_content(public_path: Path, static_path: Path):
@@ -33,13 +40,13 @@ def get_static_content(public_path: Path, static_path: Path):
             dst.parent.mkdir(parents=True, exist_ok=True)  # Create missing directories
 
             copied = shutil.copyfile(curr_elem, dst)
-            print(f"copied {curr_elem} to {copied}")
+            logger.info(f"copied {curr_elem} to {copied}")
 
     if not os.path.exists(public_path):
         os.mkdir(public_path)
     else:
         _delete_recursive(public_path)
-        print("cleared", public_path)
+        logger.info("cleared %s", public_path)
 
     _copy_recursive(static_path)
 
@@ -69,7 +76,7 @@ def extract_title(markdown: str):
 
 
 def generate_page(src: Path, template_path: Path, dst: Path):
-    print(f"Generating page from {src} to {dst} using template {template_path}")
+    logger.info(f"Generating page from {src} to {dst} using template {template_path}")
 
     with open(src, "r") as f:
         md = f.read()
@@ -89,6 +96,7 @@ def generate_page(src: Path, template_path: Path, dst: Path):
 
 
 def main():
+
     public_path, static_path, content_path, template_path = (
         cfg.get_public_path(),
         cfg.get_static_path(),
@@ -98,7 +106,7 @@ def main():
 
     get_static_content(public_path, static_path)
     get_web_content(public_path, content_path, template_path)
-    print("Website generated")
+    logger.info("Website generated")
 
 
 if __name__ == "__main__":

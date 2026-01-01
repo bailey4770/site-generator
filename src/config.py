@@ -1,5 +1,5 @@
 from pathlib import Path
-from stat import SF_SETTABLE
+import logging
 
 PROGRAMMING_LANGUAGES = [
     "python",
@@ -44,29 +44,32 @@ PROGRAMMING_LANGUAGES = [
     "vhdl",
     "verilog",
 ]
+PUBLIC_PATH = Path("public")
+STATIC_PATH = Path("static")
+CONTENT_PATH = Path("content")
+TEMPLATE_PATH: Path = Path("template.html")
+LOGGING_LEVEL = logging.DEBUG
 
 
 def get_languages() -> list[str]:
     return PROGRAMMING_LANGUAGES
 
 
-PUBLIC_PATH = Path("public")
-STATIC_PATH = Path("static")
-CONTENT_PATH = Path("content")
-TEMPLATE_PATH: Path = Path("template.html")
-
-
-def get_public_path():
+def get_public_path() -> Path:
     return PUBLIC_PATH
 
 
-def get_static_path():
+def get_static_path() -> Path:
     return STATIC_PATH
 
 
-def get_content_path():
+def get_content_path() -> Path:
     return CONTENT_PATH
 
 
 def get_template_path() -> Path:
     return TEMPLATE_PATH
+
+
+def get_logging_level():
+    return LOGGING_LEVEL

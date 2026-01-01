@@ -1,4 +1,11 @@
 from enum import Enum
+import logging
+from config import get_logging_level
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=get_logging_level(),
+)
 
 
 class BlockType(Enum):
@@ -29,6 +36,7 @@ def markdown_to_blocks(markdown: str) -> list[str]:
         current_block += line
 
     blocks.append(current_block)
+    logger.debug("markdown_to_blocks: blocks: %s", blocks)
     return blocks
 
 
@@ -44,7 +52,7 @@ def get_block_type(string_block: str) -> BlockType:
 
         return True
 
-    parts = string_block.split(" ")
+    parts = string_block.split()
     lines = string_block.splitlines()
 
     unordered_prefixes = ["-", "+", "*"]
