@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 import shutil
 import logging
@@ -51,16 +52,18 @@ def get_static_content(public_path: Path, static_path: Path):
     _copy_recursive(static_path)
 
 
-def get_web_content(public_path: Path, content_path: Path, template_path: Path):
+def get_web_content(
+    public_path: Path, content_path: Path, template_path: Path, base_path: Path
+):
     content = os.listdir(content_path)
     for item in content:
         item_path: Path = content_path.joinpath(item)
         if os.path.isfile(item_path):
-            generate_page(item_path, template_path, public_path)
+            generate_page(item_path, template_path, public_path, base_path)
         else:
             new_public_path = public_path.joinpath(item)
             os.mkdir(new_public_path)
-            get_web_content(new_public_path, item_path, template_path)
+            get_web_content(new_public_path, item_path, template_path, base_path)
 
 
 def extract_title(markdown: str):
@@ -75,7 +78,7 @@ def extract_title(markdown: str):
     raise ValueError("no title found in markdown")
 
 
-def generate_page(src: Path, template_path: Path, dst: Path):
+def generate_page(src: Path, template_path: Path, dst: Path, base_path: Path):
     logger.info(f"Generating page from {src} to {dst} using template {template_path}")
 
     with open(src, "r") as f:
@@ -87,8 +90,11 @@ def generate_page(src: Path, template_path: Path, dst: Path):
     title = extract_title(md)
     content_html = md_to_html_node(md).to_html()
 
-    index_html = template.replace("{{ Title }}", title).replace(
-        "{{ Content }}", content_html
+    index_html = (
+        template.replace("{{ Title }}", title)
+        .replace("{{ Content }}", content_html)
+        .replace('href="/', f'href="{base_path}')
+        .replace('src="/', f'src="{base_path}')
     )
 
     with open(dst.joinpath("index.html"), "w") as f:
@@ -96,16 +102,18 @@ def generate_page(src: Path, template_path: Path, dst: Path):
 
 
 def main():
+    args = sys.argv
+    base_path = Path(args[0] if args[0] else "/")
+    public_path = cfg.get_public_path() if base_path == Path("/") else Path("docs")
 
-    public_path, static_path, content_path, template_path = (
-        cfg.get_public_path(),
+    static_path, content_path, template_path = (
         cfg.get_static_path(),
         cfg.get_content_path(),
         cfg.get_template_path(),
     )
 
     get_static_content(public_path, static_path)
-    get_web_content(public_path, content_path, template_path)
+    get_web_content(public_path, content_path, template_path, base_path)
     logger.info("Website generated")
 
 
