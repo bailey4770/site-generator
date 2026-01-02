@@ -53,7 +53,7 @@ def get_static_content(public_path: Path, static_path: Path):
 
 
 def get_web_content(
-    public_path: Path, content_path: Path, template_path: Path, base_path: Path
+    public_path: Path, content_path: Path, template_path: Path, base_path: str
 ):
     content = os.listdir(content_path)
     for item in content:
@@ -78,7 +78,7 @@ def extract_title(markdown: str):
     raise ValueError("no title found in markdown")
 
 
-def generate_page(src: Path, template_path: Path, dst: Path, base_path: Path):
+def generate_page(src: Path, template_path: Path, dst: Path, base_path: str):
     logger.info(f"Generating page from {src} to {dst} using template {template_path}")
 
     with open(src, "r") as f:
@@ -93,8 +93,8 @@ def generate_page(src: Path, template_path: Path, dst: Path, base_path: Path):
     index_html = (
         template.replace("{{ Title }}", title)
         .replace("{{ Content }}", content_html)
-        .replace('href="/', f'href="{base_path}/')
-        .replace('src="/', f'src="{base_path}/')
+        .replace('href="/', f'href="{base_path}')
+        .replace('src="/', f'src="{base_path}')
     )
 
     with open(dst.joinpath("index.html"), "w") as f:
@@ -103,8 +103,8 @@ def generate_page(src: Path, template_path: Path, dst: Path, base_path: Path):
 
 def main():
     args = sys.argv
-    base_path = Path(args[1] if args[1] else "/")
-    public_path = cfg.get_public_path() if base_path == Path("/") else Path("docs")
+    base_path = args[1] if len(args) > 1 else "/"
+    public_path = cfg.get_public_path() if base_path == "/" else Path("docs")
 
     static_path, content_path, template_path = (
         cfg.get_static_path(),
