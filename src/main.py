@@ -90,11 +90,8 @@ def generate_page(src: Path, template_path: Path, dst: Path, base_path: str):
     title = extract_title(md)
     content_html = md_to_html_node(md).to_html()
 
-    index_html = (
-        template.replace("{{ Title }}", title)
-        .replace("{{ Content }}", content_html)
-        .replace('href="/', f'href="{base_path}')
-        .replace('src="/', f'src="{base_path}')
+    index_html = template.replace("{{ Title }}", title).replace(
+        "{{ Content }}", content_html
     )
 
     with open(dst.joinpath("index.html"), "w") as f:
