@@ -103,7 +103,7 @@ def generate_page(src: Path, template_path: Path, dst: Path, base_path: Path):
 
 def main():
     args = sys.argv
-    base_path = Path(args[0] if args[0] else "/")
+    base_path = Path(args[1] if args[1] else "/")
     public_path = cfg.get_public_path() if base_path == Path("/") else Path("docs")
 
     static_path, content_path, template_path = (
