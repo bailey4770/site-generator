@@ -93,8 +93,8 @@ def generate_page(src: Path, template_path: Path, dst: Path, base_path: Path):
     index_html = (
         template.replace("{{ Title }}", title)
         .replace("{{ Content }}", content_html)
-        .replace('href="/', f'href="{base_path}')
-        .replace('src="/', f'src="{base_path}')
+        .replace('href="/', f'href="{base_path}/')
+        .replace('src="/', f'src="{base_path}/')
     )
 
     with open(dst.joinpath("index.html"), "w") as f:
